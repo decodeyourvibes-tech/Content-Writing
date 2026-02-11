@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People Analytics — Client Sample</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',sans-serif; background:#f4f6fb; color:#1a202c; }
+
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg,#1e3a5f 0%,#2563eb 60%,#7c3aed 100%);
+    padding: 60px 50px 50px;
+    text-align: center;
+    color: white;
+  }
+  .hero .label {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 { font-size: 48px; font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+  .hero h1 span { color: #fbbf24; }
+  .hero p { font-size: 20px; opacity: 0.9; max-width: 700px; margin: 0 auto 30px; line-height: 1.6; }
+  .hero .meta { font-size: 13px; opacity: 0.7; }
+
+  /* STATS STRIP */
+  .stats-strip {
+    background: #1e3a5f;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    flex: 1;
+    min-width: 180px;
+    padding: 28px 20px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-size: 38px; font-weight: 800; color: #fbbf24; }
+  .stat-desc { font-size: 13px; color: #93c5fd; margin-top: 6px; line-height: 1.4; }
+
+  /* CONTENT */
+  .content { max-width: 960px; margin: 0 auto; padding: 50px 20px; }
+
+  .section { margin-bottom: 55px; }
+  .section-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #2563eb;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .section h2 {
+    font-size: 30px;
+    font-weight: 800;
+    color: #1e3a5f;
+    margin-bottom: 18px;
+    line-height: 1.25;
+  }
+  .section p {
+    font-size: 16px;
+    color: #4b5563;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  /* INTRO BOX */
+  .intro-box {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 24px 28px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 30px;
+  }
+  .intro-box p { margin: 0; font-size: 17px; color: #1e3a5f; font-style: italic; }
+
+  /* MATURITY TABLE */
+  table { width:100%; border-collapse: collapse; margin: 20px 0; }
+  th {
+    background: linear-gradient(90deg,#1e3a5f,#2563eb);
+    color: white;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 14px;
+  }
+  td { padding: 13px 16px; border-bottom: 1px solid #e5e7eb; font-size: 15px; color:#374151; }
+  tr:nth-child(even) td { background:#f9fafb; }
+  tr:hover td { background:#eff6ff; }
+  .level-badge {
+    display: inline-block;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: center;
+    line-height: 28px;
+  }
+
+  /* CASE STUDY CARDS */
+  .case-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin-bottom: 28px;
+    border: 1px solid #e5e7eb;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .case-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(37,99,235,0.12);
+  }
+  .case-header {
+    padding: 22px 28px 18px;
+    background: linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .case-logo {
+    width: 52px; height: 52px;
+    background: white;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1e3a5f;
+    flex-shrink: 0;
+  }
+  .case-header-text h3 { color: white; font-size: 20px; }
+  .case-header-text .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: #fbbf24;
+    font-size: 12px;
+    padding: 3px 12px;
+    border-radius: 20px;
+    margin-top: 5px;
+  }
+  .case-body { padding: 24px 28px; }
+  .case-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 16px; }
+  .case-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #9ca3af; margin-bottom: 8px; }
+  .case-col p { font-size: 14px; color: #374151; line-height: 1.6; }
+  .result-tag {
+    display: inline-block;
+    background: #d1fae5;
+    color: #065f46;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 3px 3px 3px 0;
+  }
+  .takeaway {
+    background: #fffbeb;
+    border-left: 4px solid #fbbf24;
+    padding: 12px 16px;
+    margin-top: 16px;
+    border-radius: 0 8px 8px 0;
+  }
+  .takeaway p { font-size: 14px; color: #78350f; margin:0; }
+  .takeaway strong { color: #d97706; }
+
+  /* SKILLS GRID */
+  .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px; }
+  .skill-card {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  .skill-card .icon { font-size: 32px; margin-bottom: 12px; }
+  .skill-card h4 { font-size: 17px; font-weight: 700; color: #1e3a5f; margin-bottom: 8px; }
+  .skill-card p { font-size: 14px; color: #6b7280; line-height: 1.6; }
+
+  /* CTA */
+  .cta-box {
+    background: linear-gradient(135deg,#1e3a5f 0%,#7c3aed 100%);
+    border-radius: 20px;
+    padding: 50px 40px;
+    text-align: center;
+    color: white;
+    margin-top: 50px;
+  }
+  .cta-box h2 { font-size: 32px; margin-bottom: 15px; }
+  .cta-box p { font-size: 18px; opacity:0.9; margin-bottom: 30px; }
+  .cta-btn {
+    display: inline-block;
+    background: #fbbf24;
+    color: #1e3a5f;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 14px 36px;
+    border-radius: 30px;
+    text-decoration: none;
+    margin: 6px;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(251,191,36,0.4);
+  }
+  .cta-btn:hover { background: white; transform: translateY(-2px); }
+  .cta-btn.outline {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+    box-shadow: none;
+  }
+  .cta-btn.outline:hover { background: rgba(255,255,255,0.1); }
+
+  /* SAMPLE BADGE */
+  .sample-badge {
+    position: fixed;
+    top: 20px; right: 20px;
+    background: #f59e0b;
+    color: #1e3a5f;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(245,158,11,0.4);
+    letter-spacing: 0.5px;
+    z-index: 999;
+  }
+
+  /* SEO KEYWORDS */
+  .keywords-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 30px;
+  }
+  .keywords-box p { font-size: 13px; color: #166534; margin: 0; }
+  .kw { font-weight: 600; }
+
+  @media(max-width:680px){
+    .hero h1 { font-size:30px; }
+    .case-row { grid-template-columns:1fr; }
+    .skills-grid { grid-template-columns:1fr; }
+    .stat-item { min-width:140px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sample-badge">SAMPLE PREVIEW</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="label">HR Skills 2025 Series</div>
+  <h1>People Analytics:<br><span>The Most Important HR Skill</span><br>You Cannot Afford to Ignore</h1>
+  <p>How data-driven HR teams are transforming workforce decisions, saving millions, and finally earning their seat at the executive table.</p>
+  <div class="meta">Content by [Your Name / Brand] &nbsp;|&nbsp; Keywords: People Analytics, HR Analytics, Workforce Analytics, Data-Driven HR</div>
+</div>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-num">367%</div>
+    <div class="stat-desc">Average ROI from mature people analytics programs</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">$1.96M</div>
+    <div class="stat-desc">Average annual savings within 24 months</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">41%</div>
+    <div class="stat-desc">Reduction in turnover costs using predictive models</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">5x</div>
+    <div class="stat-desc">More likely to act on insights — analytics leaders vs. laggards</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- SEO KEYWORDS -->
+  <div class="keywords-box">
+    <p>SEO Keywords Targeted: <span class="kw">people analytics</span> | <span class="kw">HR analytics</span> | <span class="kw">workforce analytics</span> | <span class="kw">data-driven HR</span> | <span class="kw">talent analytics</span> | <span class="kw">predictive HR analytics</span> | <span class="kw">HR metrics 2025</span> | <span class="kw">people analytics tools</span> | <span class="kw">people analytics strategy</span></p>
+  </div>
+
+  <!-- INTRO -->
+  <div class="section">
+    <div class="section-label">What Is People Analytics</div>
+    <h2>From Gut Feel to Game-Changing Decisions</h2>
+    <div class="intro-box">
+      <p>"People analytics is not a technology project. It is a business transformation led by HR — one that turns workforce data into competitive advantage."</p>
+    </div>
+    <p>People analytics — also called HR analytics, workforce analytics, or talent analytics — is the practice of collecting, analyzing, and applying employee data to make smarter business decisions.</p>
+    <p>Most HR functions today still operate largely on intuition. People analytics changes this permanently. It gives HR professionals the evidence, language, and credibility to influence strategy — not just implement it.</p>
+
+    <table>
+      <tr>
+        <th>Level</th>
+        <th>Type</th>
+        <th>The Question It Answers</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td><span class="level-badge">1</span></td>
+        <td><strong>Descriptive</strong></td>
+        <td>What happened?</td>
+        <td>Headcount, turnover rate</td>
+      </tr>
+      <tr>
+        <td><span class="level-badge">2</span></td>
+        <td><strong>Diagnostic</strong></td>
+        <td>Why did it happen?</td>
+        <td>Why is attrition high in Q3?</td>
+      </tr>
+      <tr>
+        <td><span class="level-badge">3</span></td>
+        <td><strong>Predictive</strong></td>
+        <td>What will happen?</td>
+        <td>Who is likely to resign in 6 months?</td>
+      </tr>
+      <tr>
+        <td><span class="level-badge">4</span></td>
+        <td><strong>Prescriptive</strong></td>
+        <td>What should we do?</td>
+        <td>Which actions reduce churn by 30%?</td>
+      </tr>
+    </table>
+    <p style="font-size:14px;color:#6b7280;margin-top:10px;">Most organizations operate at Level 1 or 2. The competitive advantage lies at Levels 3 and 4.</p>
+  </div>
+
+  <!-- CASE STUDIES -->
+  <div class="section">
+    <div class="section-label">Real-World Case Studies</div>
+    <h2>Organizations That Proved People Analytics Works</h2>
+    <p>These are not theoretical examples. These are real outcomes from organizations that invested in people analytics — and the results speak for themselves.</p>
+
+    <!-- Google -->
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-logo">G</div>
+        <div class="case-header-text">
+          <h3>Google — Project Oxygen & Project Aristotle</h3>
+          <span class="tag">Manager Effectiveness | Team Performance</span>
+        </div>
+      </div>
+      <div class="case-body">
+        <p style="font-size:15px;color:#374151;">Google analyzed data from over 10,000 managers to identify what makes great managers — and what makes teams effective. The answers upended conventional wisdom.</p>
+        <div class="case-row">
+          <div class="case-col">
+            <h4>The Challenge</h4>
+            <p>Do managers really matter? What makes a team effective? Google wanted data, not opinions.</p>
+          </div>
+          <div class="case-col">
+            <h4>The Approach</h4>
+            <p>Analyzed 10,000+ managers across performance reviews, 360-degree feedback, and engagement surveys (Project Oxygen). Extended to 180 teams for team effectiveness research (Project Aristotle).</p>
+          </div>
+          <div class="case-col">
+            <h4>Key Results</h4>
+            <div class="result-tag">Manager quality improved 75%</div>
+            <div class="result-tag">Psychological safety = #1 team predictor</div>
+            <div class="result-tag">Global management models transformed</div>
+          </div>
+        </div>
+        <div class="takeaway">
+          <p><strong>HR Lesson:</strong> Data can challenge assumptions even the smartest organizations hold. Google assumed technical strength made the best managers. People analytics proved otherwise.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- IBM -->
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-logo">IBM</div>
+        <div class="case-header-text">
+          <h3>IBM — AI-Powered Attrition Prediction</h3>
+          <span class="tag">Predictive Retention | Cost Savings</span>
+        </div>
+      </div>
+      <div class="case-body">
+        <p style="font-size:15px;color:#374151;">IBM built a machine learning model that predicts employee attrition with 95% accuracy — enabling proactive retention before employees decide to leave.</p>
+        <div class="case-row">
+          <div class="case-col">
+            <h4>The Challenge</h4>
+            <p>High-performing employees leaving unexpectedly, threatening project continuity and business performance.</p>
+          </div>
+          <div class="case-col">
+            <h4>The Approach</h4>
+            <p>Machine learning model analyzing hundreds of variables: compensation, tenure, manager relationship, career progression, project history, and more.</p>
+          </div>
+          <div class="case-col">
+            <h4>Key Results</h4>
+            <div class="result-tag">$300M in retention savings</div>
+            <div class="result-tag">95% prediction accuracy</div>
+            <div class="result-tag">Proactive HR interventions enabled</div>
+          </div>
+        </div>
+        <div class="takeaway">
+          <p><strong>HR Lesson:</strong> Predictive analytics converts reactive HR into proactive strategy. Acting before someone resigns is exponentially cheaper than replacing them.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credit Suisse -->
+    <div class="case-card">
+      <div class="case-header">
+        <div class="case-logo">CS</div>
+        <div class="case-header-text">
+          <h3>Credit Suisse — Attrition Analytics Saving $70M Annually</h3>
+          <span class="tag">Retention Analytics | Financial Services</span>
+        </div>
+      </div>
+      <div class="case-body">
+        <p style="font-size:15px;color:#374151;">With 47,000+ employees, Credit Suisse tracked 40+ variables per employee to predict departure windows and save tens of millions in replacement costs annually.</p>
+        <div class="case-row">
+          <div class="case-col">
+            <h4>The Challenge</h4>
+            <p>Costly unplanned attrition at scale, with replacement costs ranging 30-400% of annual salary.</p>
+          </div>
+          <div class="case-col">
+            <h4>The Approach</h4>
+            <p>Tracked 40+ variables including performance ratings, manager changes, promotion velocity, and team stability to model departure risk windows.</p>
+          </div>
+          <div class="case-col">
+            <h4>Key Results</h4>
+            <div class="result-tag">$70M saved annually</div>
+            <div class="result-tag">Predictive retention triggers identified</div>
+            <div class="result-tag">Scalable across 47,000+ employees</div>
+          </div>
+        </div>
+        <div class="takeaway">
+          <p><strong>HR Lesson:</strong> You do not need to be a tech company to win with people analytics. Traditional organizations sitting on rich HR data can generate massive financial returns.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SKILLS SECTION -->
+  <div class="section">
+    <div class="section-label">Skills Framework</div>
+    <h2>What It Takes to Practice People Analytics</h2>
+    <p>People analytics is not owned by data scientists. These are the four capabilities every HR professional needs to develop.</p>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="icon">📊</div>
+        <h4>Data Literacy</h4>
+        <p>Reading dashboards, interpreting reports, identifying data quality issues, and understanding statistical significance vs. practical significance.</p>
+      </div>
+      <div class="skill-card">
+        <div class="icon">💻</div>
+        <h4>Technical Proficiency</h4>
+        <p>Working with HRIS platforms, building dashboards in Power BI or Tableau, Excel/Google Sheets, and understanding Python or R for advanced roles.</p>
+      </div>
+      <div class="skill-card">
+        <div class="icon">📈</div>
+        <h4>Business Acumen</h4>
+        <p>Connecting HR metrics to business outcomes, building the ROI case for analytics, and framing every HR question as a business problem.</p>
+      </div>
+      <div class="skill-card">
+        <div class="icon">🧠</div>
+        <h4>Analytical Thinking</h4>
+        <p>Asking the right questions before selecting metrics, distinguishing correlation from causation, and synthesizing multiple data sources into one coherent narrative.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <h2>Ready to Build Your People Analytics Capability?</h2>
+    <p>This is a sample preview. The full content includes 10 detailed sections, 6 case studies, implementation roadmaps, tools comparison, and ethical frameworks — all SEO-optimized and ready to publish.</p>
+    <a href="#" class="cta-btn">Request Full Content</a>
+    <a href="#" class="cta-btn outline">Schedule a Review Call</a>
+  </div>
+
+  <div style="text-align:center;margin-top:30px;font-size:13px;color:#9ca3af;padding-bottom:20px;">
+    SAMPLE DOCUMENT — For Review Purposes Only &nbsp;|&nbsp; Full Version Available on Approval<br>
+    Target Keywords: People Analytics | HR Analytics | Workforce Analytics | Data-Driven HR | Talent Analytics 2025
+  </div>
+
+</div>
+</body>
+</html>
